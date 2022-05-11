@@ -1,5 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server');
 const mongoose = require('mongoose');
+const logger = require('./logger');
 require('dotenv').config();
 
 const URI = process.env.DB_URI;
@@ -30,12 +31,13 @@ mongoose
     useNewUrlParser: true,
   })
   .then(() => {
-    // eslint-disable-next-line no-console
-    console.log('Database is ok!');
+    logger.info('Database connection is ok!');
+  })
+  .catch((err: any) => {
+    logger.error(err);
   });
 
 // The `listen` method launches a web server.
-server.listen().then(({ url }) => {
-  // eslint-disable-next-line no-console
-  console.log(`🚀  Server ready at ${url}`);
+server.listen().then(({ url }: { url: string }) => {
+  logger.info(`Server ready at ${url} 🚀 `);
 });

@@ -4,7 +4,7 @@ module.exports = {
     browser: true,
     node: true,
   },
-  extends: ['airbnb', 'plugin:jest/recommended', 'jest-enzyme'],
+  extends: ['airbnb'],
   plugins: ['babel', 'import', 'jsx-a11y', 'react', 'prettier'],
   parser: 'babel-eslint',
   parserOptions: {
@@ -16,7 +16,6 @@ module.exports = {
   },
   rules: {
     'linebreak-style': 'off', // Don't play nicely with Windows.
-
     'arrow-parens': 'off', // Incompatible with prettier
     'object-curly-newline': 'off', // Incompatible with prettier
     'no-mixed-operators': 'off', // Incompatible with prettier
@@ -52,7 +51,5 @@ module.exports = {
         },
       },
     ], // for nested label htmlFor error
-
-    'prettier/prettier': ['error'],
   },
 };
