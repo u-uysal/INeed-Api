@@ -2,10 +2,24 @@
   "name": "ineed-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.ts",
+    "dev": "nodemon index.ts",
+    "prettier": "prettier  — write src/**/*.js",
+    "lint": "eslint . --ext ts --ext tsx --ext js",
+    "lint:write": "eslint --debug src/ --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.@(ts|tsx|js|jsx)": [
+      "yarn lint",
+      "yarn prettier"
+    ]
   },
   "repository": {
     "type": "git",
@@ -21,9 +35,22 @@
     "apollo-server": "^3.7.0",
     "dotenv": "^16.0.1",
     "graphql": "^16.5.0",
-    "mongoose": "^6.3.3"
+    "mongoose": "^6.3.3",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-babel": "^5.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-prettier": "^2.6.0",
+    "husky": "^1.1.2",
+    "lint-staged": "^7.3.0",
+    "nodemon": "^2.0.16",
+    "prettier": "^1.14.3",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
   }
 }
