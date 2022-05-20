@@ -4,8 +4,7 @@ import dotenv from 'dotenv';
 import { merge } from 'lodash';
 import mongoose from 'mongoose';
 import logger from '../logger';
-import { AuthorResolvers, AuthorTypeDef } from './graphql/Author';
-import { BookResolvers, BookTypeDef } from './graphql/Book';
+import { UserResolvers, UserTypeDef } from './graphql/User';
 
 dotenv.config();
 
@@ -18,8 +17,8 @@ const Query = `
 `;
 
 const schema = makeExecutableSchema({
-  typeDefs: [Query, AuthorTypeDef, BookTypeDef],
-  resolvers: merge({}, AuthorResolvers, BookResolvers),
+  typeDefs: [Query, UserTypeDef],
+  resolvers: merge({}, UserResolvers),
 });
 
 const server = new ApolloServer({ schema });
