@@ -1,8 +1,8 @@
 import { UserInputError } from 'apollo-server';
 
-const validateRegisterData = (username, email, password, confirmPassword) => {
-  if (username.trim() === '') {
-    throw new UserInputError('Username should not be empty');
+const validateRegisterData = (firstname, email, password, confirmPassword) => {
+  if (firstname.trim() === '') {
+    throw new UserInputError('Firstname should not be empty');
   }
   if (email.trim() === '') {
     throw new UserInputError('Email should not be empty');

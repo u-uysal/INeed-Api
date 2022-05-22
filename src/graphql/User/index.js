@@ -14,12 +14,14 @@ export const UserTypeDef = gql`
   type User {
     id: ID!
     email: String!
-    username: String!
+    firstname: String!
+    lastname: String!
     token: String!
     createdAt: String!
   }
   input RegisterInput {
-    username: String!
+    firstname: String!
+    lastname: String!
     password: String!
     confirmPassword: String!
     email: String!
@@ -32,9 +34,9 @@ export const UserTypeDef = gql`
 
 export const UserResolvers = {
   Mutation: {
-    async register(_, { data: { username, password, confirmPassword, email } }) {
+    async register(_, { data: { firstname, lastname, password, confirmPassword, email } }) {
       // validate the data
-      validateRegisterData(username, email, password, confirmPassword);
+      validateRegisterData(firstname, email, password, confirmPassword);
       // make sure user is not already exists
       const user = await User.findOne({ email });
       if (user) {
@@ -45,7 +47,8 @@ export const UserResolvers = {
       password = await bcrypt.hash(password, 12);
       const newUser = new User({
         email,
-        username,
+        firstname,
+        lastname,
         password,
         createdAt: new Date().toISOString(),
       });
@@ -56,7 +59,7 @@ export const UserResolvers = {
         {
           id: response.id,
           email: response.email,
-          username: response.username,
+          firstname: response.firstname,
         },
         process.env.SECRET_KEY,
         { expiresIn: '2h' },
