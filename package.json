@@ -1,63 +1,64 @@
 {
-  "name": "ineed-api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.ts",
-    "dev": "nodemon --exec babel-node src/index.js",
-    "prettier": "prettier  — write src/**/*.js",
-    "lint": "eslint . --ext ts --ext tsx --ext js",
-    "lint:write": "eslint --debug src/ --fix"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.@(ts|tsx|js|jsx)": [
-      "yarn lint",
-      "yarn prettier"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/u-uysal/INeed-Api.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/u-uysal/INeed-Api/issues"
-  },
-  "homepage": "https://github.com/u-uysal/INeed-Api#readme",
-  "dependencies": {
-    "@graphql-tools/schema": "^8.3.11",
-    "apollo-server": "^3.7.0",
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.0.1",
-    "eslint-plugin-react": "^7.29.4",
-    "graphql": "^16.5.0",
-    "graphql-tag": "^2.12.6",
-    "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.21",
-    "mongoose": "^6.3.3",
-    "winston": "^3.7.2"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.17.10",
-    "@babel/node": "^7.17.10",
-    "@babel/preset-env": "^7.17.10",
-    "babel-eslint": "^8.2.3",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^17.0.0",
-    "eslint-plugin-babel": "^5.1.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-prettier": "^2.6.0",
-    "husky": "^1.1.2",
-    "lint-staged": "^7.3.0",
-    "nodemon": "^2.0.16",
-    "prettier": "^1.14.3"
-  }
+    "name": "ineed-api",
+    "version": "1.0.0",
+    "description": "- Clone this repo and open with your IDE\r - Run **npm install** in the terminal\r - Create a file named **.env** under **config** folder\r - Add environment variables in this file (**Please contact me for these details**)",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.ts",
+        "dev": "nodemon --exec babel-node src/index.js",
+        "prettier": "prettier  — write src/**/*.js",
+        "lint": "eslint . --ext ts --ext tsx --ext js",
+        "lint:write": "eslint --debug src/ --fix"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.@(ts|tsx|js|jsx)": [
+            "yarn lint",
+            "yarn prettier"
+        ]
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/u-uysal/INeed-Api.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/u-uysal/INeed-Api/issues"
+    },
+    "homepage": "https://github.com/u-uysal/INeed-Api#readme",
+    "dependencies": {
+        "@graphql-tools/schema": "^8.3.11",
+        "apollo-server": "^3.7.0",
+        "bcryptjs": "^2.4.3",
+        "dotenv": "^16.0.1",
+        "eslint-plugin-react": "^7.29.4",
+        "graphql": "^16.5.0",
+        "graphql-tag": "^2.12.6",
+        "jsonwebtoken": "^8.5.1",
+        "lodash": "^4.17.21",
+        "mongoose": "^6.3.3",
+        "winston": "^3.7.2"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.17.10",
+        "@babel/node": "^7.17.10",
+        "@babel/preset-env": "^7.17.10",
+        "babel-eslint": "^8.2.3",
+        "eslint": "^4.19.1",
+        "eslint-config-airbnb": "^17.0.0",
+        "eslint-plugin-babel": "^5.1.0",
+        "eslint-plugin-import": "^2.12.0",
+        "eslint-plugin-jsx-a11y": "^6.0.3",
+        "eslint-plugin-prettier": "^2.6.0",
+        "husky": "^1.1.2",
+        "lint-staged": "^7.3.0",
+        "nodemon": "^2.0.16",
+        "prettier": "^1.14.3"
+    },
+    "keywords": []
 }
