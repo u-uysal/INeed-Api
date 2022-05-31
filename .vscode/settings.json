@@ -1,18 +1,21 @@
 {
-    "workbench.settings.editor": "json",
+  "workbench.settings.editor": "json",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "javascript.format.enable": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.packageManager": "yarn",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "[javascript]": {
     "editor.formatOnSave": true,
-    "editor.tabSize": 2,
-    "javascript.format.enable": false,
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "eslint.packageManager": "yarn",
-    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-    "eslint.workingDirectories": [{ "mode": "auto" }],
-    "[javascript]": { "editor.formatOnSave": true },
-    "[typescript]": { "editor.formatOnSave": true },
-    "editor.codeActionsOnSave": {
-      "source.fixAll": true,
-      "source.organizeImports": true
-    },
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "files.eol": "\n"
-  }
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": { "editor.formatOnSave": true },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.eol": "\n"
+}
