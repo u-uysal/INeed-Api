@@ -4,27 +4,33 @@ import dotenv from 'dotenv';
 import { merge } from 'lodash';
 import mongoose from 'mongoose';
 import logger from '../logger';
-import { UserResolvers, UserTypeDef } from './graphql/User';
+import { ProductResolvers, ProductTypeDef } from './graphql/Product';
+import {
+  forgotPasswordResolvers,
+  LoginResolvers,
+  UserResolvers,
+  UserTypeDef,
+} from './graphql/User';
 
 dotenv.config();
 
 const URI = process.env.DB_URI;
 
 const Query = `
-  type Query {
-    _empty: String
-  }
+ type Query {
+   _empty: String
+ }
 `;
 
 const schema = makeExecutableSchema({
-  typeDefs: [Query, UserTypeDef],
-  resolvers: merge({}, UserResolvers),
+  typeDefs: [Query, UserTypeDef, ProductTypeDef],
+  resolvers: merge({}, UserResolvers, LoginResolvers, forgotPasswordResolvers, ProductResolvers),
 });
 
 const server = new ApolloServer({ schema });
 
 mongoose
-  .connect(URI)
+  .connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     logger.info('Database connection is ok!');
   })
