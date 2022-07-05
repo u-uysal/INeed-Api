@@ -26,9 +26,33 @@ export const UserTypeDef = gql`
     confirmPassword: String!
     email: String!
   }
+  type Login {
+    id: ID!
+    email: String!
+    token: String!
+    createdAt: String!
+  }
+
+  type rstPasswort {
+    id: ID!
+    email: String!
+    token: String!
+  }
+  input resetPasswortData {
+    email: String!
+    password: String!
+    confirmPassword: String!
+  }
+
+  input LoginInput {
+    password: String!
+    email: String!
+  }
 
   type Mutation {
     register(data: RegisterInput): User!
+    login(data: LoginInput): Login!
+    resetPasswort(data: resetPasswortData): rstPasswort!
   }
 `;
 
@@ -67,6 +91,44 @@ export const UserResolvers = {
       logger.info(response);
 
       return { ...response._doc, id: response.id, token };
+    },
+  },
+};
+
+// LoginResolvers //
+export const LoginResolvers = {
+  Mutation: {
+    async login(_, { data: { email, password } }) {
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        throw new Error('User does not exist!');
+      }
+      const isEqual = await bcrypt.compare(password, user.password);
+      if (!isEqual) {
+        throw new Error('Password is incorrect!');
+      }
+      const token = jwt.sign({ id: user.id, email: user.email }, 'somesupersecretkey', {
+        expiresIn: '2h',
+      });
+      return { id: user.id, email: user.email, token: token, tokenExpiration: 1 };
+    },
+  },
+};
+
+// PasswordResolvers //
+export const forgotPasswordResolvers = {
+  Mutation: {
+    async resetPasswort(_, { data: { email, password, confirmPassword } }) {
+      if (password !== confirmPassword) {
+        throw new Error(`Your passwords don't match`);
+      }
+      const filter = { email: email };
+      const update = { password: password };
+      const saltRounds = 12;
+      const hash = await bcrypt.hash(password, saltRounds);
+      let doc = await User.findOneAndUpdate(filter, update);
+      if (!doc) throw new Error('Your password reset token is either invalid or expired.');
+      return doc;
     },
   },
 };
