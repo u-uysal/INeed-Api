@@ -5,12 +5,7 @@ import { merge } from 'lodash';
 import mongoose from 'mongoose';
 import logger from '../logger';
 import { ProductResolvers, ProductTypeDef } from './graphql/Product';
-import {
-  forgotPasswordResolvers,
-  LoginResolvers,
-  UserResolvers,
-  UserTypeDef,
-} from './graphql/User';
+import { UserResolvers, UserTypeDef } from './graphql/User';
 
 dotenv.config();
 
@@ -24,7 +19,7 @@ const Query = `
 
 const schema = makeExecutableSchema({
   typeDefs: [Query, UserTypeDef, ProductTypeDef],
-  resolvers: merge({}, UserResolvers, LoginResolvers, forgotPasswordResolvers, ProductResolvers),
+  resolvers: merge({}, UserResolvers, ProductResolvers),
 });
 
 const server = new ApolloServer({ schema });
@@ -39,6 +34,6 @@ mongoose
   });
 
 // The `listen` method launches a web server.
-server.listen().then(({ url }) => {
+server.listen(8000).then(({ url }) => {
   logger.info(`Server ready at ${url} 🚀 `);
 });

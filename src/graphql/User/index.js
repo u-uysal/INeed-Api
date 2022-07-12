@@ -1,10 +1,9 @@
 import { UserInputError } from 'apollo-server';
 import bcrypt from 'bcryptjs';
 import gql from 'graphql-tag';
-import jwt from 'jsonwebtoken';
 import logger from '../../../logger';
 import User from '../../Models/User';
-import validateRegisterData from '../../Utils/validator';
+import { generateToken, validateLoginData, validateRegisterData } from '../../Utils/validator';
 
 export const UserTypeDef = gql`
   # extend type Query {
@@ -26,6 +25,8 @@ export const UserTypeDef = gql`
     confirmPassword: String!
     email: String!
   }
+
+  # where do you use this?
   type Login {
     id: ID!
     email: String!
@@ -44,14 +45,11 @@ export const UserTypeDef = gql`
     confirmPassword: String!
   }
 
-  input LoginInput {
-    password: String!
-    email: String!
-  }
-
   type Mutation {
     register(data: RegisterInput): User!
-    login(data: LoginInput): Login!
+    # if number of arguments is lower than 3, dont need to create an input type
+    # login mutation will always return User type
+    login(password: String!, email: String!): User!
     resetPasswort(data: resetPasswortData): rstPasswort!
   }
 `;
@@ -79,56 +77,58 @@ export const UserResolvers = {
 
       const response = await newUser.save();
 
-      const token = jwt.sign(
-        {
-          id: response.id,
-          email: response.email,
-          firstname: response.firstname,
-        },
-        process.env.SECRET_KEY,
-        { expiresIn: '2h' },
-      );
+      const token = generateToken(response);
       logger.info(response);
 
       return { ...response._doc, id: response.id, token };
     },
-  },
-};
+    async login(_, { email, password }) {
+      validateLoginData(email, password);
 
-// LoginResolvers //
-export const LoginResolvers = {
-  Mutation: {
-    async login(_, { data: { email, password } }) {
-      const user = await User.findOne({ email: email });
+      // dont need to use email twice. If key and value are same, you can use just key
+      const user = await User.findOne({ email });
       if (!user) {
-        throw new Error('User does not exist!');
+        throw new UserInputError('Invalid credentials');
       }
+
       const isEqual = await bcrypt.compare(password, user.password);
       if (!isEqual) {
-        throw new Error('Password is incorrect!');
+        throw new UserInputError('Invalid credentials');
       }
-      const token = jwt.sign({ id: user.id, email: user.email }, 'somesupersecretkey', {
-        expiresIn: '2h',
-      });
-      return { id: user.id, email: user.email, token: token, tokenExpiration: 1 };
-    },
-  },
-};
 
-// PasswordResolvers //
-export const forgotPasswordResolvers = {
-  Mutation: {
-    async resetPasswort(_, { data: { email, password, confirmPassword } }) {
-      if (password !== confirmPassword) {
-        throw new Error(`Your passwords don't match`);
-      }
-      const filter = { email: email };
-      const update = { password: password };
-      const saltRounds = 12;
-      const hash = await bcrypt.hash(password, saltRounds);
-      let doc = await User.findOneAndUpdate(filter, update);
-      if (!doc) throw new Error('Your password reset token is either invalid or expired.');
-      return doc;
+      const token = generateToken(user);
+
+      // never push your secret key. Use environment variable instead.
+
+      // const token = jwt.sign({ id: user.id, email: user.email }, 'somesupersecretkey', {
+      //   expiresIn: '2h',
+      // });
+      return { ...user._doc, id: user.id, token };
     },
   },
 };
+// we create a resolver only for the entity. Now the entity is the User since we are in the User folder.
+// Dont need to create another resolver inside the entity.
+// export const LoginResolvers = {
+//   Mutation: {},
+// };
+
+// we create a resolver only for the entity. Now the entity is the User since we are in the User folder.
+// todo create a forgotPasswordResolvers inside the entity.
+
+// export const forgotPasswordResolvers = {
+//   Mutation: {
+//     async resetPasswort(_, { data: { email, password, confirmPassword } }) {
+//       if (password !== confirmPassword) {
+//         throw new Error("Your passwords don't match");
+//       }
+//       const filter = { email };
+//       const update = { password };
+//       const saltRounds = 12;
+//       const hash = await bcrypt.hash(password, saltRounds);
+//       const doc = await User.findOneAndUpdate(filter, update);
+//       if (!doc) throw new Error('Your password reset token is either invalid or expired.');
+//       return doc;
+//     },
+//   },
+// };
