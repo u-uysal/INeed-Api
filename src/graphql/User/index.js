@@ -1,10 +1,9 @@
 import { UserInputError } from 'apollo-server';
 import bcrypt from 'bcryptjs';
 import gql from 'graphql-tag';
-import jwt from 'jsonwebtoken';
 import logger from '../../../logger';
 import User from '../../Models/User';
-import validateRegisterData from '../../Utils/validator';
+import { generateToken, validateLoginData, validateRegisterData } from '../../Utils/validator';
 
 export const UserTypeDef = gql`
   # extend type Query {
@@ -26,12 +25,6 @@ export const UserTypeDef = gql`
     confirmPassword: String!
     email: String!
   }
-  type Login {
-    id: ID!
-    email: String!
-    token: String!
-    createdAt: String!
-  }
 
   type rstPasswort {
     id: ID!
@@ -44,21 +37,22 @@ export const UserTypeDef = gql`
     confirmPassword: String!
   }
 
-  input LoginInput {
-    password: String!
-    email: String!
-  }
-
   type Mutation {
-    register(data: RegisterInput): User!
-    login(data: LoginInput): Login!
+    register(
+      firstname: String!
+      lastname: String!
+      password: String!
+      confirmPassword: String!
+      email: String!
+    ): User!
+    login(password: String!, email: String!): User!
     resetPasswort(data: resetPasswortData): rstPasswort!
   }
 `;
 
 export const UserResolvers = {
   Mutation: {
-    async register(_, { data: { firstname, lastname, password, confirmPassword, email } }) {
+    async register(_, { firstname, lastname, password, confirmPassword, email }) {
       // validate the data
       validateRegisterData(firstname, email, password, confirmPassword);
       // make sure user is not already exists
@@ -79,56 +73,27 @@ export const UserResolvers = {
 
       const response = await newUser.save();
 
-      const token = jwt.sign(
-        {
-          id: response.id,
-          email: response.email,
-          firstname: response.firstname,
-        },
-        process.env.SECRET_KEY,
-        { expiresIn: '2h' },
-      );
+      const token = generateToken(response);
       logger.info(response);
 
       return { ...response._doc, id: response.id, token };
     },
-  },
-};
+    async login(_, { email, password }) {
+      validateLoginData(email, password);
 
-// LoginResolvers //
-export const LoginResolvers = {
-  Mutation: {
-    async login(_, { data: { email, password } }) {
-      const user = await User.findOne({ email: email });
+      const user = await User.findOne({ email });
       if (!user) {
-        throw new Error('User does not exist!');
+        throw new UserInputError('Invalid credentials');
       }
+
       const isEqual = await bcrypt.compare(password, user.password);
       if (!isEqual) {
-        throw new Error('Password is incorrect!');
+        throw new UserInputError('Invalid credentials');
       }
-      const token = jwt.sign({ id: user.id, email: user.email }, 'somesupersecretkey', {
-        expiresIn: '2h',
-      });
-      return { id: user.id, email: user.email, token: token, tokenExpiration: 1 };
-    },
-  },
-};
 
-// PasswordResolvers //
-export const forgotPasswordResolvers = {
-  Mutation: {
-    async resetPasswort(_, { data: { email, password, confirmPassword } }) {
-      if (password !== confirmPassword) {
-        throw new Error(`Your passwords don't match`);
-      }
-      const filter = { email: email };
-      const update = { password: password };
-      const saltRounds = 12;
-      const hash = await bcrypt.hash(password, saltRounds);
-      let doc = await User.findOneAndUpdate(filter, update);
-      if (!doc) throw new Error('Your password reset token is either invalid or expired.');
-      return doc;
+      const token = generateToken(user);
+
+      return { ...user._doc, id: user.id, token };
     },
   },
 };
